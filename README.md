@@ -25,4 +25,4 @@ To reproduce caller bug:
 1. call the `get()` fn in the flipper contract: `cd flipper && cargo contract call --contract <address of the flipper contract> --suri //Alice --message get` 
    ![call1](call1.png) `[212, 53, ...] == 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY` which is Alice's account
 1. call the `get()` fn in the proxy contract: `cd flipper && cargo contract call --contract <address of the proxy contract> --suri //Alice --message get` 
-   ![call2](call2.png) `[13, 253, ...] == 5CP3vEmx4SnpTHBt8Tx1o3guQjyyqLLRVdY8C8yqGgVaELja` which is the proxy contract's account (for my deployment at least, your's will be different). **These should not be different.**
+   ![call2](call2.png) `[13, 253, ...] == 5CP3vEmx4SnpTHBt8Tx1o3guQjyyqLLRVdY8C8yqGgVaELja` which is the proxy contract's account (for my deployment at least, your's will be different). **This should be Alice's account, not the proxy account.**
