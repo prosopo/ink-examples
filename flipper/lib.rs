@@ -29,6 +29,7 @@ pub mod flipper {
         /// Returns the current value of the Flipper's boolean.
         #[ink(message)]
         pub fn get(&self) -> bool {
+            ink::env::debug_println!("caller: {:?}", ink::env::caller::<ink::env::DefaultEnvironment>());
             self.value
         }
     }
