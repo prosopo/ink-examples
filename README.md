@@ -1,38 +1,28 @@
-<div align="center">
-   <img src="./.images/ink-logo-glow.svg" alt="ink!" height="136" />
-</div>
+To reproduce caller bug:
 
-This repository contains a set of example contracts for ink!.
+0. added a print caller line to the `get()` fn of the flipper contract
+   ```rust
+        /// Returns the current value of the Flipper's boolean.
+        #[ink(message)]
+        pub fn get(&self) -> bool {
+            ink::env::debug_println!("caller: {:?}", ink::env::caller::<ink::env::DefaultEnvironment>());
+            self.value
+        }
+   ```
+   This prints the address of the caller to the console of the substrate node.
+1. build the flipper contract: `cd flipper && cargo contract build`
+1. deploy the flipper contract: `cd flipper && cargo contract instantiate --suri //Alice --constructor new_default` 
 
-Have a look at the different examples to better understand how to use ink! to build your own Substrate smart contracts.
+   ![flipper](flipper.png)
 
-### Can I add a new example here?
+1. build the proxy contract: `cd upgradeable-contracts/forward-calls && cargo contract build`
+1. deploy the proxy contract: `cd upgradeable-contracts/forward-calls && cargo contract instantiate --suri //Alice --args <address of the flipper contract>`
 
-Please don't add them here, but create a Pull Request to the `integration-tests` folder in [the ink! repository](https://github.com/paritytech/ink) instead.
-The content of that folder is synchronized with this repository on new releases.
+   ![proxy](proxy.png)
 
-## Preparation
-
-For building the example smart contracts found in this folder you will need to have [`cargo-contract`](https://github.com/paritytech/cargo-contract) installed.
-
-```
-cargo install cargo-contract --force
-```
-
-We use the `--force` to update to the most recent `cargo-contract` version.
-
-## Build example contract and generate the contracts metadata
-
-To build a single example and generate the contracts Wasm file, navigate to the root of the smart contract and run the following command:
-
-`cargo contract build`
-
-You should now have an optimized `<contract-name>.wasm` file, a `metadata.json` file and a `<contract-name>.contract` file in the `target` folder of your contract.
-The `.contract` file combines the Wasm and metadata into one file and can be used for instantiation.
-
-## License
-
-The examples in this folder are released into the public domain.
-We hope they help you build something great with ink!.
-
-See the [LICENSE file](LICENSE) in this folder for more details.
+1. here's what the deployment looks like in polkadot js apps:
+   ![overview](overview.png)
+1. call the `get()` fn in the flipper contract: `cd flipper && cargo contract call --contract <address of the flipper contract> --suri //Alice --message get` 
+   ![call1](call1.png) `[212, 53, ...] == 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY` which is Alice's account
+1. call the `get()` fn in the proxy contract: `cd flipper && cargo contract call --contract <address of the proxy contract> --suri //Alice --message get` 
+   ![call2](call2.png) `[13, 253, ...] == 5CP3vEmx4SnpTHBt8Tx1o3guQjyyqLLRVdY8C8yqGgVaELja` which is the proxy contract's account (for my deployment at least, your's will be different). **These should not be different.**
